@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Real-time flight departure information from Qatar airports. Search by airline, destination city, or country." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:; connect-src 'self';" />
+  <title>Qatar Departures — HFJ Cognitive Lab</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+
+  <header role="banner">
+    <div class="header-brand">
+      <span class="header-title">✈ Qatar Departures</span>
+      <span class="header-subtitle">Live flight information from Qatar airports</span>
+    </div>
+    <span id="last-updated" aria-live="polite"></span>
+  </header>
+
+  <div class="controls" role="search">
+    <div class="search-wrap">
+      <span class="search-icon" aria-hidden="true">🔍</span>
+      <input
+        type="search"
+        id="search-input"
+        placeholder="Search airline, city, country, flight…"
+        aria-label="Search flights by airline, destination city, country or flight number"
+        autocomplete="off"
+        maxlength="100"
+      />
+      <button id="clear-search" aria-label="Clear search">✕</button>
+    </div>
+    <button id="refresh-btn" aria-label="Refresh flight data">
+      <span class="refresh-icon" aria-hidden="true">↻</span>
+      Refresh
+    </button>
+    <span id="result-count" aria-live="polite" aria-atomic="true"></span>
+  </div>
+
+  <main id="main-content">
+    <div id="flights-container" aria-live="polite" aria-busy="true">
+      <div class="state-empty">
+        <div class="state-icon" aria-hidden="true">✈️</div>
+        <p>Loading flights…</p>
+      </div>
+    </div>
+
+    <p class="disclaimer">
+      Flight information is provided for general guidance only. Always verify with your airline or airport before travel.
+      Data shown is indicative and may not reflect real-time conditions.
+    </p>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/data-service.js"></script>
+  <script src="js/filter.js"></script>
+  <script src="js/flight-renderer.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
