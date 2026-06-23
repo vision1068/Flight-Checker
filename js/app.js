@@ -100,9 +100,14 @@ const App = (() => {
     const btn = $('refresh-btn');
     if (btn) { btn.setAttribute('aria-busy', 'true'); btn.disabled = true; }
     try {
-      const data = await DataService[force ? 'refresh' : 'getFlights']();
       const dateStr = _getSelectedDate();
-      _allFlights = Filter.sortByTime(_rebaseToDate(data, dateStr));
+      const data = force
+        ? await DataService.refresh(dateStr)
+        : await DataService.getFlights(false, dateStr);
+      // Mock data carries a fixed date, so rebase it to the chosen day.
+      // Live data already comes back scheduled for the requested date.
+      const flights = DataService.isLive() ? data : _rebaseToDate(data, dateStr);
+      _allFlights = Filter.sortByTime(flights);
       _updateTimestamp();
       _populateSelects();
       _applyFilters();

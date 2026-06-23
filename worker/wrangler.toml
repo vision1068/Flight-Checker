@@ -1,0 +1,14 @@
+name = "qatar-departures-proxy"
+main = "flight-proxy.js"
+compatibility_date = "2024-06-01"
+
+# The AviationStack API key is stored as a SECRET, never in this file.
+# Set it after first deploy with:
+#   npx wrangler secret put AVIATIONSTACK_KEY
+#
+# Deploy with:
+#   npx wrangler deploy
+#
+# After deploy, Cloudflare prints a URL like:
+#   https://qatar-departures-proxy.<your-subdomain>.workers.dev
+# Put that URL into js/config.js -> LIVE_URL and set DATA_SOURCE = 'live'.

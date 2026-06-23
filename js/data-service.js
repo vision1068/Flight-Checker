@@ -1,6 +1,7 @@
 const DataService = (() => {
   let _cache = null;
   let _cacheTime = 0;
+  let _cacheKey = '';
 
   function _validate(data) {
     if (!Array.isArray(data)) throw new Error('SCHEMA_INVALID');
@@ -10,12 +11,23 @@ const DataService = (() => {
     );
   }
 
-  async function getFlights(forceRefresh = false) {
+  function _buildUrl(dateStr) {
+    if (CONFIG.DATA_SOURCE === 'live') {
+      const base = CONFIG.LIVE_URL;
+      const sep = base.includes('?') ? '&' : '?';
+      return dateStr ? `${base}${sep}date=${encodeURIComponent(dateStr)}` : base;
+    }
+    return CONFIG.MOCK_URL;
+  }
+
+  async function getFlights(forceRefresh = false, dateStr = '') {
     const now = Date.now();
-    if (!forceRefresh && _cache && (now - _cacheTime) < CONFIG.CACHE_TTL_MS) {
+    const key = `${CONFIG.DATA_SOURCE}:${dateStr}`;
+    if (!forceRefresh && _cache && _cacheKey === key &&
+        (now - _cacheTime) < CONFIG.CACHE_TTL_MS) {
       return _cache;
     }
-    const url = CONFIG.DATA_SOURCE === 'live' ? CONFIG.LIVE_URL : CONFIG.MOCK_URL;
+    const url = _buildUrl(dateStr);
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
     try {
@@ -25,6 +37,7 @@ const DataService = (() => {
       const json = await res.json();
       _cache = _validate(json);
       _cacheTime = Date.now();
+      _cacheKey = key;
       return _cache;
     } catch (e) {
       clearTimeout(timeout);
@@ -34,9 +47,13 @@ const DataService = (() => {
     }
   }
 
-  function refresh() {
-    return getFlights(true);
+  function refresh(dateStr = '') {
+    return getFlights(true, dateStr);
   }
 
-  return { getFlights, refresh };
+  function isLive() {
+    return CONFIG.DATA_SOURCE === 'live';
+  }
+
+  return { getFlights, refresh, isLive };
 })();
