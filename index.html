@@ -19,23 +19,39 @@
   </header>
 
   <div class="controls" role="search">
-    <div class="search-wrap">
-      <span class="search-icon" aria-hidden="true">🔍</span>
-      <input
-        type="search"
-        id="search-input"
-        placeholder="Search airline, city, country, flight…"
-        aria-label="Search flights by airline, destination city, country or flight number"
-        autocomplete="off"
-        maxlength="100"
-      />
-      <button id="clear-search" aria-label="Clear search">✕</button>
+    <div class="filter-row">
+      <div class="select-wrap">
+        <label for="from-select" class="select-label">From</label>
+        <select id="from-select" aria-label="Filter by departure airport">
+          <option value="">All origins</option>
+        </select>
+      </div>
+      <div class="select-wrap">
+        <label for="to-select" class="select-label">To</label>
+        <select id="to-select" aria-label="Filter by destination">
+          <option value="">All destinations</option>
+        </select>
+      </div>
+      <div class="search-wrap">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input
+          type="search"
+          id="search-input"
+          placeholder="Search airline, flight…"
+          aria-label="Search flights by airline or flight number"
+          autocomplete="off"
+          maxlength="100"
+        />
+        <button id="clear-search" aria-label="Clear search">✕</button>
+      </div>
     </div>
-    <button id="refresh-btn" aria-label="Refresh flight data">
-      <span class="refresh-icon" aria-hidden="true">↻</span>
-      Refresh
-    </button>
-    <span id="result-count" aria-live="polite" aria-atomic="true"></span>
+    <div class="controls-row2">
+      <button id="refresh-btn" aria-label="Refresh flight data">
+        <span class="refresh-icon" aria-hidden="true">↻</span>
+        Refresh
+      </button>
+      <span id="result-count" aria-live="polite" aria-atomic="true"></span>
+    </div>
   </div>
 
   <main id="main-content">

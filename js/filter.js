@@ -1,15 +1,62 @@
 const Filter = (() => {
-  function apply(flights, query) {
-    if (!query || !query.trim()) return flights;
-    const q = query.trim().toLowerCase();
-    return flights.filter(f =>
-      f.airline_name.toLowerCase().includes(q) ||
-      f.flight_number.toLowerCase().includes(q) ||
-      f.destination_city.toLowerCase().includes(q) ||
-      f.destination_country.toLowerCase().includes(q) ||
-      (f.destination_iata && f.destination_iata.toLowerCase().includes(q)) ||
-      (f.origin_airport && f.origin_airport.toLowerCase().includes(q))
-    );
+  function apply(flights, { query = '', from = '', to = '' } = {}) {
+    let result = flights;
+
+    if (from) {
+      const f = from.toLowerCase();
+      result = result.filter(fl =>
+        (fl.origin_airport && fl.origin_airport.toLowerCase() === f) ||
+        fl.origin_city.toLowerCase() === f
+      );
+    }
+
+    if (to) {
+      const t = to.toLowerCase();
+      result = result.filter(fl =>
+        (fl.destination_iata && fl.destination_iata.toLowerCase() === t) ||
+        fl.destination_city.toLowerCase() === t
+      );
+    }
+
+    if (query && query.trim()) {
+      const q = query.trim().toLowerCase();
+      result = result.filter(fl =>
+        fl.airline_name.toLowerCase().includes(q) ||
+        fl.flight_number.toLowerCase().includes(q) ||
+        fl.destination_city.toLowerCase().includes(q) ||
+        fl.destination_country.toLowerCase().includes(q) ||
+        (fl.destination_iata && fl.destination_iata.toLowerCase().includes(q)) ||
+        (fl.origin_airport && fl.origin_airport.toLowerCase().includes(q))
+      );
+    }
+
+    return result;
+  }
+
+  function getOrigins(flights) {
+    const seen = new Set();
+    const origins = [];
+    for (const f of flights) {
+      const key = f.origin_airport || f.origin_city;
+      if (!seen.has(key)) {
+        seen.add(key);
+        origins.push({ code: key, city: f.origin_city });
+      }
+    }
+    return origins.sort((a, b) => a.city.localeCompare(b.city));
+  }
+
+  function getDestinations(flights) {
+    const seen = new Set();
+    const dests = [];
+    for (const f of flights) {
+      const key = f.destination_iata || f.destination_city;
+      if (!seen.has(key)) {
+        seen.add(key);
+        dests.push({ code: key, city: f.destination_city, country: f.destination_country });
+      }
+    }
+    return dests.sort((a, b) => a.city.localeCompare(b.city));
   }
 
   function sortByTime(flights) {
@@ -18,5 +65,5 @@ const Filter = (() => {
     );
   }
 
-  return { apply, sortByTime };
+  return { apply, getOrigins, getDestinations, sortByTime };
 })();

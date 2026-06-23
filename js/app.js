@@ -47,11 +47,35 @@ const App = (() => {
     _updateCount(flights.length, _allFlights.length);
   }
 
-  function _applySearch(query) {
-    const filtered = Filter.sortByTime(Filter.apply(_allFlights, query));
+  function _getFilters() {
+    return {
+      query: ($('search-input') || {}).value || '',
+      from:  ($('from-select') || {}).value || '',
+      to:    ($('to-select') || {}).value || '',
+    };
+  }
+
+  function _applyFilters(filters) {
+    filters = filters || _getFilters();
+    const filtered = Filter.sortByTime(Filter.apply(_allFlights, filters));
     _render(filtered);
     const clearBtn = $('clear-search');
-    if (clearBtn) clearBtn.style.display = query ? 'flex' : 'none';
+    if (clearBtn) clearBtn.style.display = filters.query ? 'flex' : 'none';
+  }
+
+  function _populateSelects() {
+    const fromSel = $('from-select');
+    const toSel   = $('to-select');
+    if (fromSel) {
+      const origins = Filter.getOrigins(_allFlights);
+      fromSel.innerHTML = '<option value="">All origins</option>' +
+        origins.map(o => `<option value="${o.code}">${o.city} (${o.code})</option>`).join('');
+    }
+    if (toSel) {
+      const dests = Filter.getDestinations(_allFlights);
+      toSel.innerHTML = '<option value="">All destinations</option>' +
+        dests.map(d => `<option value="${d.code}">${d.city}, ${d.country} (${d.code})</option>`).join('');
+    }
   }
 
   async function _load(force = false) {
@@ -62,8 +86,8 @@ const App = (() => {
       const data = await DataService[force ? 'refresh' : 'getFlights']();
       _allFlights = Filter.sortByTime(data);
       _updateTimestamp();
-      const query = ($('search-input') || {}).value || '';
-      _applySearch(query);
+      _populateSelects();
+      _applyFilters();
     } catch (e) {
       const msg = e.message === 'TIMEOUT'
         ? 'Request timed out. Check your connection and try again.'
@@ -83,26 +107,29 @@ const App = (() => {
     _load();
 
     const searchInput = $('search-input');
-    const debouncedSearch = _debounce(q => _applySearch(q), CONFIG.SEARCH_DEBOUNCE_MS);
+    const debouncedSearch = _debounce(() => _applyFilters(), CONFIG.SEARCH_DEBOUNCE_MS);
     if (searchInput) {
-      searchInput.addEventListener('input', e => debouncedSearch(e.target.value));
+      searchInput.addEventListener('input', debouncedSearch);
     }
 
     const clearBtn = $('clear-search');
     if (clearBtn) {
       clearBtn.addEventListener('click', () => {
         if (searchInput) { searchInput.value = ''; searchInput.focus(); }
-        _applySearch('');
+        _applyFilters();
       });
     }
+
+    const fromSel = $('from-select');
+    if (fromSel) fromSel.addEventListener('change', () => _applyFilters());
+
+    const toSel = $('to-select');
+    if (toSel) toSel.addEventListener('change', () => _applyFilters());
 
     const refreshBtn = $('refresh-btn');
     if (refreshBtn) refreshBtn.addEventListener('click', refresh);
 
-    window.addEventListener('resize', () => {
-      const query = (searchInput || {}).value || '';
-      _applySearch(query);
-    });
+    window.addEventListener('resize', () => _applyFilters());
   }
 
   return { init, refresh };

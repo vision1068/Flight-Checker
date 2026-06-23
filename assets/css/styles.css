@@ -60,15 +60,56 @@ header {
   border-bottom: 1px solid var(--border);
   padding: .75rem 1.5rem;
   display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+.filter-row {
+  display: flex;
   align-items: center;
   gap: .75rem;
   flex-wrap: wrap;
 }
+.controls-row2 {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+.select-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  min-width: 180px;
+  flex: 1;
+  max-width: 260px;
+}
+.select-label {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--text-muted);
+}
+.select-wrap select {
+  padding: .52rem .75rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .92rem;
+  color: var(--text);
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color .15s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .75rem center;
+  padding-right: 2.2rem;
+}
+.select-wrap select:focus { border-color: var(--qr-maroon); background-color: #fff; }
 .search-wrap {
   position: relative;
   flex: 1;
-  min-width: 200px;
-  max-width: 480px;
+  min-width: 180px;
+  max-width: 360px;
 }
 .search-icon {
   position: absolute;
@@ -263,7 +304,10 @@ tbody tr:hover { background: #F8FAFC; }
   .controls { padding: .75rem 1rem; }
   main { padding: 1rem; }
   table { display: none; }
-  #result-count { width: 100%; margin-left: 0; }
+  #result-count { margin-left: auto; }
+  .select-wrap { max-width: 100%; }
+  .filter-row { flex-direction: column; align-items: stretch; }
+  .search-wrap { max-width: 100%; }
 }
 @media (min-width: 641px) {
   .flight-card { display: none; }
