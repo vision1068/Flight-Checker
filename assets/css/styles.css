@@ -105,6 +105,18 @@ header {
   padding-right: 2.2rem;
 }
 .select-wrap select:focus { border-color: var(--qr-maroon); background-color: #fff; }
+#date-input {
+  width: 100%;
+  padding: .52rem .75rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .92rem;
+  color: var(--text);
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color .15s;
+}
+#date-input:focus { border-color: var(--qr-maroon); background-color: #fff; outline: none; }
 .search-wrap {
   position: relative;
   flex: 1;
@@ -208,7 +220,9 @@ td {
 }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background: #F8FAFC; }
-.col-time { font-weight: 700; font-size: 1rem; white-space: nowrap; }
+.col-time { white-space: nowrap; }
+.time-hhmm { display: block; font-weight: 700; font-size: 1rem; }
+.time-date { display: block; font-size: .75rem; color: var(--text-muted); }
 .flight-num { font-family: monospace; font-weight: 700; font-size: .95rem; color: var(--qr-maroon); }
 .dest-city { display: block; font-weight: 600; }
 .dest-country { display: block; font-size: .8rem; color: var(--text-muted); }

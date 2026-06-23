@@ -5,6 +5,19 @@ const App = (() => {
 
   const $ = id => document.getElementById(id);
 
+  function _tomorrow() {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split('T')[0];
+  }
+
+  function _rebaseToDate(flights, dateStr) {
+    return flights.map(f => ({
+      ...f,
+      scheduled_departure: dateStr + 'T' + f.scheduled_departure.split('T')[1]
+    }));
+  }
+
   function _debounce(fn, ms) {
     return (...args) => {
       clearTimeout(_searchTimer);
@@ -47,6 +60,10 @@ const App = (() => {
     _updateCount(flights.length, _allFlights.length);
   }
 
+  function _getSelectedDate() {
+    return ($('date-input') || {}).value || _tomorrow();
+  }
+
   function _getFilters() {
     return {
       query: ($('search-input') || {}).value || '',
@@ -84,7 +101,8 @@ const App = (() => {
     if (btn) { btn.setAttribute('aria-busy', 'true'); btn.disabled = true; }
     try {
       const data = await DataService[force ? 'refresh' : 'getFlights']();
-      _allFlights = Filter.sortByTime(data);
+      const dateStr = _getSelectedDate();
+      _allFlights = Filter.sortByTime(_rebaseToDate(data, dateStr));
       _updateTimestamp();
       _populateSelects();
       _applyFilters();
@@ -104,6 +122,11 @@ const App = (() => {
   }
 
   function init() {
+    const dateInput = $('date-input');
+    if (dateInput) {
+      dateInput.value = _tomorrow();
+      dateInput.addEventListener('change', () => _load());
+    }
     _load();
 
     const searchInput = $('search-input');

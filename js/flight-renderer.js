@@ -16,6 +16,12 @@ const FlightRenderer = (() => {
     } catch { return '--:--'; }
   }
 
+  function _formatDate(iso) {
+    try {
+      return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch { return ''; }
+  }
+
   function _escape(str) {
     return String(str ?? '')
       .replace(/&/g, '&amp;')
@@ -32,7 +38,10 @@ const FlightRenderer = (() => {
 
   function _row(f) {
     return `<tr>
-      <td class="col-time">${_escape(_formatTime(f.scheduled_departure))}</td>
+      <td class="col-time">
+        <span class="time-hhmm">${_escape(_formatTime(f.scheduled_departure))}</span>
+        <span class="time-date">${_escape(_formatDate(f.scheduled_departure))}</span>
+      </td>
       <td class="col-flight"><span class="flight-num">${_escape(f.flight_number)}</span></td>
       <td class="col-airline">${_escape(f.airline_name)}</td>
       <td class="col-origin">${_escape(f.origin_airport || 'DOH')}</td>
@@ -58,7 +67,7 @@ const FlightRenderer = (() => {
         <span class="card-dest">${_escape(f.destination_city)}, ${_escape(f.destination_country)}</span>
       </div>
       <div class="card-footer">
-        <span class="card-time">🕐 ${_escape(_formatTime(f.scheduled_departure))}</span>
+        <span class="card-time">🕐 ${_escape(_formatTime(f.scheduled_departure))} · ${_escape(_formatDate(f.scheduled_departure))}</span>
         <span class="card-gate">Gate ${_escape(f.gate || '—')} · T${_escape(f.terminal || '—')}</span>
       </div>
     </div>`;
